@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ReactDOM from "react-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 // fake data generator
@@ -33,25 +32,6 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 
 	return result;
 };
-const grid = 8;
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-	// some basic styles to make the items look a bit nicer
-	userSelect: "none",
-	padding: grid * 2,
-	margin: `0 0 ${grid}px 0`,
-
-	// change background colour if dragging
-	background: isDragging ? "lightgreen" : "grey",
-
-	// styles we need to apply on draggables
-	...draggableStyle,
-});
-const getListStyle = isDraggingOver => ({
-	background: isDraggingOver ? "lightblue" : "lightgrey",
-	padding: grid,
-	width: 250,
-});
 
 const Board = () => {
 	const [state, setState] = useState([getItems(10), getItems(5, 10)]);
@@ -73,6 +53,7 @@ const Board = () => {
 			setState(newState);
 		} else {
 			const result = move(state[sInd], state[dInd], source, destination);
+			console.log(result);
 			const newState = [...state];
 			newState[sInd] = result[sInd];
 			newState[dInd] = result[dInd];
@@ -83,31 +64,47 @@ const Board = () => {
 
 	return (
 		<div>
-			<button
-				type='button'
-				onClick={() => {
-					setState([...state, []]);
-				}}
-			>
-				Add new group
-			</button>
-			<button
-				type='button'
-				onClick={() => {
-					setState([...state, getItems(1)]);
-				}}
-			>
-				Add new item
-			</button>
-			<div style={{ display: "flex" }}>
+			<nav className='navbar  navbar-dark bg-dark mb-2 py-2'>
+				<div className='d-flex justify-content-start'>
+					<div className='container'>
+						<a class='navbar-brand fw-bold' href='#'>
+							Taskify
+						</a>
+						<button
+							type='button'
+							className='btn btn-primary mx-1'
+							onClick={() => {
+								setState([...state, []]);
+							}}
+						>
+							+ Group
+						</button>
+						<button
+							type='button'
+							className='btn btn-primary'
+							onClick={() => {
+								setState([...state, getItems(1)]);
+							}}
+						>
+							+ item
+						</button>
+					</div>
+				</div>
+			</nav>
+			<div className='d-flex justify-content-start'>
 				<DragDropContext onDragEnd={onDragEnd}>
 					{state.map((el, ind) => (
 						<Droppable key={ind} droppableId={`${ind}`}>
 							{(provided, snapshot) => (
 								<div
 									ref={provided.innerRef}
-									style={getListStyle(snapshot.isDraggingOver)}
+									// style={getListStyle(snapshot.isDraggingOver)}
 									{...provided.droppableProps}
+									className={
+										snapshot.isDraggingOver
+											? "p-3 mx-2 bg-warning bg-gradient"
+											: "p-3 mx-2 bg-info bg-gradient"
+									}
 								>
 									{el.map((item, index) => (
 										<Draggable
@@ -120,20 +117,17 @@ const Board = () => {
 													ref={provided.innerRef}
 													{...provided.draggableProps}
 													{...provided.dragHandleProps}
-													style={getItemStyle(
-														snapshot.isDragging,
-														provided.draggableProps.style
-													)}
+													className={
+														snapshot.isDragging
+															? "card m-1 border border-dark"
+															: "card m-1 "
+													}
 												>
-													<div
-														style={{
-															display: "flex",
-															justifyContent: "space-around",
-														}}
-													>
-														{item.content}
+													<div className='card-body'>
+														<span className='me-2'>{item.content}</span>
 														<button
 															type='button'
+															className='btn btn-danger'
 															onClick={() => {
 																const newState = [...state];
 																newState[ind].splice(index, 1);
