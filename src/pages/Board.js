@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext } from "react-beautiful-dnd";
+import TodoList from "../components/TodoList";
 
 // fake data generator
 const getItems = (count, offset = 0) =>
@@ -94,59 +95,7 @@ const Board = () => {
 			<div className='d-flex justify-content-start'>
 				<DragDropContext onDragEnd={onDragEnd}>
 					{state.map((el, ind) => (
-						<Droppable key={ind} droppableId={`${ind}`}>
-							{(provided, snapshot) => (
-								<div
-									ref={provided.innerRef}
-									// style={getListStyle(snapshot.isDraggingOver)}
-									{...provided.droppableProps}
-									className={
-										snapshot.isDraggingOver
-											? "p-3 mx-2 bg-warning bg-gradient"
-											: "p-3 mx-2 bg-info bg-gradient"
-									}
-								>
-									{el.map((item, index) => (
-										<Draggable
-											key={item.id}
-											draggableId={item.id}
-											index={index}
-										>
-											{(provided, snapshot) => (
-												<div
-													ref={provided.innerRef}
-													{...provided.draggableProps}
-													{...provided.dragHandleProps}
-													className={
-														snapshot.isDragging
-															? "card m-1 border border-dark"
-															: "card m-1 "
-													}
-												>
-													<div className='card-body'>
-														<span className='me-2'>{item.content}</span>
-														<button
-															type='button'
-															className='btn btn-danger'
-															onClick={() => {
-																const newState = [...state];
-																newState[ind].splice(index, 1);
-																setState(
-																	newState.filter(group => group.length)
-																);
-															}}
-														>
-															delete
-														</button>
-													</div>
-												</div>
-											)}
-										</Draggable>
-									))}
-									{provided.placeholder}
-								</div>
-							)}
-						</Droppable>
+						<TodoList el={el} ind={ind} state={state} setState={setState} />
 					))}
 				</DragDropContext>
 			</div>
